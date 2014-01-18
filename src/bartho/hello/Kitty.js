@@ -1,6 +1,6 @@
 exports['/beget/src/bartho/hello/Kitty'] = {
   
-  // extends: '/THI.Views.DatePicker:extend',
+  extends: '>backbone.View',//':extend',
   
   // inherits: ['/Object'],
   

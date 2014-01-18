@@ -60,11 +60,14 @@ module.exports['/beget/test/Beget'] = {
       assert.equal(require('backbone').View, k._View);
     }, 
     
+    'should allow extension via extends prop': function () {
+      var k = beget('/beget/src/bartho/hello/Kitty');
+      assert(k instanceof require('backbone').View);
+    },
+    
     'should do something with binding to prevent muckups when aliasing': function () {},
     
     'should allow inheritence via inherits prop': function () {},
-    
-    'should allow extension via extends prop': function () {},
     
     'should allow import namespace resolution based upon where it\'s aliased': function () {}
   }

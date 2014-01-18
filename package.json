@@ -10,7 +10,8 @@
   "devDependencies": {
     "underscore": "*",
     "backbone": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "assert": "*"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec --ui exports ./test/*"

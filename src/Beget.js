@@ -18,47 +18,36 @@ var Beget = exports['/Beget'] = {
   },
   
   _begetFromProto: function (proto, args) {
-    /**
-    /THI.Views.DatePicker.extend
+    // decide how we want to procreate
+    var Parent, Child;
+    if (proto.extends) {
+      Parent = Beget._resolveImport(proto.extends);
+      Child = Parent.extend(proto);
+    } else {
+      function Parent() {};
+      Child = Beget._extend(Parent, Child);
+    }
     
-    We want a child of something that looks like Kitty, which has DatePicker in it's prototype
-    [Catch] - We need child to be instantiated with a list of args.
+    // create instance with above args
+    function Infant() {
+      if (proto.hasOwnProperty('imports')) {
+        Beget._populateImportsOnto(this, proto.imports);
+      }
+      
+      //Child.constructor.apply(this, args);
+      proto.constructor.apply(this, args);
+    }
     
+    var Surrogate = function () {this.constructor = Infant};
+    Surrogate.prototype = Child.prototype;
+    Infant.prototype = new Surrogate;
+    // end arg infusino
     
-    1. Bind extend to constructor
-    2. Make Kitty via standard extends method (key this)
-    3. Swap kitty constructor for something that does..
-       a) 
-    
-    boundExtend = Beget.beget('/THI.Views.DatePicker:extend').extend.bind(DatePicker)
-    Kitty = boundExtend(protoKitty)
-    superKitty = new Kitty
-    args = ['a', 'b', 'c']
-    function X() {Kitty.apply(this, args)}
-    X.prototype = superKitty;
-    return new X;
-    
-    ---
-    
-    When there's an extends, there's an additional layer which is cached.
-    We can reuse the above constructor arg application on standard beget
-    We can even do import resolution on the cached prototype. (They're mutable, but the web is global anyway?)
-    
-    TODO: set up "super()"
-    */
-    
-    
-    
-    var x = Beget._create(proto);
-    if (x.imports) {Beget._populateImportsOnto(x, x.imports)}
-    x.constructor.apply(x, args);
-    return x;
+    return new Infant;
   },
   
   _populateImportsOnto: function (x, imports) {
-    for (var i = 0, namespace, namespaceIsAliased, alias, namespaceHasPropReferences, propRefs, module; 
-             i < imports.length; i++) {
-             
+    for (var i = 0, namespace, namespaceIsAliased, alias; i < imports.length; i++) {
       namespace = imports[i];
       namespaceIsAliased = !Beget._isString(namespace);
       
@@ -71,22 +60,20 @@ var Beget = exports['/Beget'] = {
         }
       } else {alias = '_' + namespace.split('/').pop()}
       
-      namespaceHasPropReferences = namespace.indexOf('.') > -1;
-      if (namespaceHasPropReferences) {
-        propRefs = namespace.split('.');
-        namespace = propRefs.splice(0, 1)[0];
-      }
-      
-      mod = Beget._require(namespace);
-      while (propRefs && propRefs.length) mod = mod[propRefs.shift()];
-      x[alias] = mod;
+      x[alias] = this._resolveImport(namespace);
     }
   },
   
-  _create: Object.create || function (proto) {
-    function X() {}
-    X.prototype = proto;
-    return new X;
+  _resolveImport: function (namespace) {
+    var namespaceHasPropReferences = namespace.indexOf('.') > -1, propRefs;
+    if (namespaceHasPropReferences) {
+      propRefs = namespace.split('.');
+      namespace = propRefs.splice(0, 1)[0];
+    }
+    
+    var mod = Beget._require(namespace);
+    while (propRefs && propRefs.length) mod = mod[propRefs.shift()];
+    return mod;
   },
   
   _require: function (ns) {
