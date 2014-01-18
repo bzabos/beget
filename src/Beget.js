@@ -1,7 +1,7 @@
 var Array = [].constructor, 
     String = ''.constructor;
     
-var Beget = exports['/bartho/Beget'] = {
+var Beget = exports['/Beget'] = {
   beget: function (namespace, args, delegate) {
     var namespaceIsProto = !Beget._isString(namespace);
     var argsAreAbsent = arguments.length === 2 && !Beget._isArray(args);

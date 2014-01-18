@@ -1,12 +1,12 @@
-exports['/bartho/hello/Kitty'] = {
+exports['/beget/src/bartho/hello/Kitty'] = {
   
   // extends: '/THI.Views.DatePicker:extend',
   
   // inherits: ['/Object'],
   
   imports: [
-    '/bartho/hello/Puppy',
-    {'/bartho/hello/Puppy': '_Dog'},
+    '/beget/src/bartho/hello/Puppy',
+    {'/beget/src/bartho/hello/Puppy': '_Dog'},
     {'>underscore': '_'},
     {'>backbone.View': '_View'}
   ],

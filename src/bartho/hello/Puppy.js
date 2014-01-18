@@ -1,3 +1,3 @@
-exports['/bartho/hello/Puppy'] = {
+exports['/beget/src/bartho/hello/Puppy'] = {
   constructor: function (name) {this.name = name}
 };
