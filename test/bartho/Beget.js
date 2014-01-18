@@ -61,6 +61,8 @@ module.exports = {
         assert.equal(require('backbone').View, k._View);
       }, 
       
+      'should do something with binding to prevent muckups when aliasing': function () {},
+      
       'should allow inheritence via inherits prop': function () {},
       
       'should allow extension via extends prop': function () {},
