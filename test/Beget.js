@@ -1,78 +1,78 @@
-var assert = require('assert'),
-  beget = require('beget')['/Beget'].beget,
-  Puppy = require('beget/src/bartho/hello/Puppy')['/beget/src/bartho/hello/Puppy'],
-  Kitty = require('beget/src/bartho/hello/Kitty')['/beget/src/bartho/hello/Kitty'],
-  _ = require('underscore');
-
 exports['/beget/test/Beget'] = {
+  setUp: function () {
+    this.assert = require('assert');
+    this.Model = require('backbone').Model;
+    this.View = require('backbone').View;
+    this.beget = require('beget')['/Beget'].beget;
+    this.Puppy = require('beget/src/bartho/hello/Puppy')['/beget/src/bartho/hello/Puppy'];
+  },
+
   '#beget()': {
     'should call constructor on delegate': function () {
       var wasCalled = false,
         delegate = {constructor: function () {wasCalled = true}};
-      beget('/beget/src/bartho/hello/Kitty', delegate);
-      assert.ok(wasCalled);
+      this.beget('/beget/src/bartho/hello/Kitty', delegate);
+      this.assert.ok(wasCalled);
     },
 
     'should provide prototype\'s descendant to delegate constructor': function () {
       var delegate = {constructor: function (p) {this.p = p}};
 
-      beget('/beget/src/bartho/hello/Puppy', delegate);
-      assert(delegate.p instanceof require('backbone').Model);
+      this.beget('/beget/src/bartho/hello/Puppy', delegate);
+      this.assert(delegate.p instanceof this.Model);
     },
 
     'should return reference to new instance': function () {
       var delegate = {constructor: function (k) {this.k = k}},
-        k = beget('/beget/src/bartho/hello/Kitty', delegate);
-      assert.equal(k, delegate.k);
+        k = this.beget('/beget/src/bartho/hello/Kitty', delegate);
+      this.assert.equal(k, delegate.k);
     },
 
     'should provide arguments to Kitty.constructor when second arg is list': function () {
-      var k = beget('/beget/src/bartho/hello/Kitty', ['Fluffy']);
-      assert.equal('Fluffy', k.name);
+      var k = this.beget('/beget/src/bartho/hello/Kitty', ['Fluffy']);
+      this.assert.equal('Fluffy', k.name);
     },
 
     'should allow provision of raw prototype in place of namespace': function () {
-      var p = beget(Puppy, ['Max']);
-      assert(p instanceof require('backbone').Model);
-      assert.equal('Max', p.name);
+      var p = this.beget(this.Puppy, ['Max']);
+      this.assert(p instanceof this.Model);
+      this.assert.equal('Max', p.name);
     },
 
     'should provide private top-level reference to imported prototype when just namespace': function () {
-      var k = beget('/beget/src/bartho/hello/Kitty');
-      assert.equal(Puppy, k._Puppy);
+      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      this.assert.equal(this.Puppy, k._Puppy);
     },
 
     'should allow aliasing imports when dictionary': function () {
-      var k = beget('/beget/src/bartho/hello/Kitty');
-      assert.equal(Puppy, k._Dog);
+      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      this.assert.equal(this.Puppy, k._Dog);
     },
 
     'should allow import of entire module': function () {
-      var k = beget('/beget/src/bartho/hello/Kitty');
-      assert.equal(require('underscore'), k._);
+      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      this.assert.equal(require('underscore'), k._);
     },
 
     'should allow method imports when dot-notation used': function () {
-      var k = beget('/beget/src/bartho/hello/Kitty');
-      assert.equal(require('backbone').View, k._View);
+      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      this.assert.equal(this.View, k._View);
     },
 
     'should allow extension via extends prop': function () {
-      var M = require('backbone').Model;
-      var k = beget('/beget/src/bartho/hello/Kitty', [{id: 500}]);
-      assert(k instanceof M);
-      assert.deepEqual({id: 500}, k.name);
-      assert.equal(M.prototype.set, k.set);
-      assert.equal(500, k.get('id'));
+      var k = this.beget('/beget/src/bartho/hello/Kitty', [{id: 500}]);
+      this.assert(k instanceof this.Model);
+      this.assert.deepEqual({id: 500}, k.name);
+      this.assert.equal(this.Model.prototype.set, k.set);
+      this.assert.equal(500, k.get('id'));
     },
 
     'should allow inheritence via inherits prop': function () {
-      var M = require('backbone').Model;
-      var p = beget('/beget/src/bartho/hello/Puppy', [{id: 500}]);
-      assert(p instanceof M);
-      assert.deepEqual({id: 500}, p.name);
-      assert.equal(M.prototype.set, p.set);
-      assert.equal(500, p.get('id'));
+      var p = this.beget('/beget/src/bartho/hello/Puppy', [{id: 500}]);
+      this.assert(p instanceof this.Model);
+      this.assert.deepEqual({id: 500}, p.name);
+      this.assert.equal(this.Model.prototype.set, p.set);
+      this.assert.equal(500, p.get('id'));
     },
 
     'should resolve imports onto delegate': function () {},
