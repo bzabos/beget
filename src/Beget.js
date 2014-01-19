@@ -16,7 +16,11 @@ var Beget = exports['/Beget'] = {
   _begetFromNS: function (namespace, args) {
     return Beget._begetFromProto(Beget._require(namespace), args);
   },
-  
+
+  // todo: we need to cache Child to avoid recreating prototype every beget
+  // todo: we need to cache initial resolution to avoid parse+require
+  // todo: we need to use reference for parent method to avoid recreating it
+  // todo: we need to extract surrogate functionality as it's duplicated
   _begetFromProto: function (proto, args) {
     // decide how we want to procreate
     var Parent, Child;
@@ -24,24 +28,25 @@ var Beget = exports['/Beget'] = {
       Parent = Beget._resolveImport(proto.extends);
       Child = Parent.extend(proto);
     } else {
-      function Parent() {};
-      Child = Beget._extend(Parent, Child);
+      Parent = proto.inherits ? Beget._resolveImport(proto.inherits) : function Parent() {};
+      Child = Beget._extend(Parent, proto);
     }
-    
+
+    // set up constructor chaining
+    Child.prototype.parent = function (namespace, etc) {
+      Beget._resolveImport(namespace).apply(this, Array.prototype.slice.call(arguments, 1));
+    };
+
     // create instance with above args
     function Infant() {
-      if (proto.hasOwnProperty('imports')) {
-        Beget._populateImportsOnto(this, proto.imports);
-      }
-      
-      //Child.constructor.apply(this, args);
-      proto.constructor.apply(this, args);
+      if (proto.hasOwnProperty('imports')) {Beget._populateImportsOnto(this, proto.imports)}
+      Child.apply(this, args);
     }
     
     var Surrogate = function () {this.constructor = Infant};
     Surrogate.prototype = Child.prototype;
     Infant.prototype = new Surrogate;
-    // end arg infusino
+    // end arg infusion
     
     return new Infant;
   },
@@ -85,20 +90,20 @@ var Beget = exports['/Beget'] = {
   _isArray: function (a) {return a && a.constructor === Array},
   
   /** Backbone's Surrogate extend */
-  _extend: function (parent, protoProps) {
-    var child;
-    if (protoProps && protoProps.hasOwnProperty('constructor')) {child = protoProps.constructor} 
-    else {child = function () {return parent.apply(this, arguments)}}
+  _extend: function (Parent, proto) {
+    var Child, prop;
+    if (proto && proto.hasOwnProperty('constructor')) {Child = proto.constructor}
+    else {Child = function () {return Parent.apply(this, arguments)}}
     
-    for (var prop in parent) {child[prop] = parent[prop]}
+    for (prop in Parent) {Child[prop] = Parent[prop]}
     
-    var Surrogate = function () {this.constructor = child};
-    Surrogate.prototype = parent.prototype;
-    child.prototype = new Surrogate;
+    var Surrogate = function () {this.constructor = Child};
+    Surrogate.prototype = Parent.prototype;
+    Child.prototype = new Surrogate;
     
-    if (protoProps) {for (var prop in protoProps) {child.prototype[prop] = protoProps[prop]}}
-    
-    child.__super__ = parent.prototype;
-    return child;
+    if (proto) {for (prop in proto) {Child.prototype[prop] = proto[prop]}}
+
+    Child.__super__ = Parent.prototype;
+    return Child;
   }
 };

@@ -1,3 +1,8 @@
 exports['/beget/src/bartho/hello/Puppy'] = {
-  constructor: function (name) {this.name = name}
+  inherits: '>backbone.Model',
+
+  constructor: function (name) {
+    this.parent('>backbone.Model', name);
+    this.name = name;
+  }
 };

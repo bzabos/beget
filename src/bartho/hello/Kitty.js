@@ -1,9 +1,5 @@
 exports['/beget/src/bartho/hello/Kitty'] = {
-  
-  extends: '>backbone.View',//':extend',
-  
-  // inherits: ['/Object'],
-  
+  extends: '>backbone.Model',
   imports: [
     '/beget/src/bartho/hello/Puppy',
     {'/beget/src/bartho/hello/Puppy': '_Dog'},
@@ -11,5 +7,8 @@ exports['/beget/src/bartho/hello/Kitty'] = {
     {'>backbone.View': '_View'}
   ],
     
-  constructor: function (name) {this.name = name}
-}
+  constructor: function (name) {
+    this.parent('>backbone.Model', name);
+    this.name = name;
+  }
+};
