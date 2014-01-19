@@ -64,7 +64,6 @@ exports['/beget/test/Beget'] = {
       assert.deepEqual({id: 500}, k.name);
       assert.equal(M.prototype.set, k.set);
       assert.equal(500, k.get('id'));
-
     },
 
     'should allow inheritence via inherits prop': function () {

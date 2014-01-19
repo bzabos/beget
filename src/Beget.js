@@ -1,7 +1,7 @@
 var Array = [].constructor, 
     String = ''.constructor;
-    
-var Beget = exports['/Beget'] = {
+
+var Beget = {
   beget: function (namespace, args, delegate) {
     var namespaceIsProto = !Beget._isString(namespace);
     var argsAreAbsent = arguments.length === 2 && !Beget._isArray(args);
@@ -23,32 +23,22 @@ var Beget = exports['/Beget'] = {
   // todo: we need to extract surrogate functionality as it's duplicated
   _begetFromProto: function (proto, args) {
     // decide how we want to procreate
-    var Parent, Child;
-    if (proto.extends) {
-      Parent = Beget._resolveImport(proto.extends);
-      Child = Parent.extend(proto);
-    } else {
-      Parent = proto.inherits ? Beget._resolveImport(proto.inherits) : function Parent() {};
-      Child = Beget._extend(Parent, proto);
-    }
+    var parentNS = proto.extends || proto.inherits,
+        Parent = parentNS ? Beget._resolveImport(parentNS) : function Parent() {},
+        Child = proto.extends ? Parent.extend(proto) : Beget._inherit(Parent, proto);
 
     // set up constructor chaining
-    Child.prototype.parent = function (namespace, etc) {
-      Beget._resolveImport(namespace).apply(this, Array.prototype.slice.call(arguments, 1));
-    };
+    Child.prototype.parent = Beget.__invokeParentWith;
 
-    // create instance with above args
-    function Infant() {
+    // create instance with provided args
+    return new (Beget._applySurrogate(Child, function () {
       if (proto.hasOwnProperty('imports')) {Beget._populateImportsOnto(this, proto.imports)}
       Child.apply(this, args);
-    }
-    
-    var Surrogate = function () {this.constructor = Infant};
-    Surrogate.prototype = Child.prototype;
-    Infant.prototype = new Surrogate;
-    // end arg infusion
-    
-    return new Infant;
+    }));
+  },
+
+  __invokeParentWith: function (namespace, etc) {
+    return Beget._resolveImport(namespace).apply(this, Array.prototype.slice.call(arguments, 1));
   },
   
   _populateImportsOnto: function (x, imports) {
@@ -88,22 +78,27 @@ var Beget = exports['/Beget'] = {
   
   _isString: function (s) {return (s || s === '') && s.constructor === String},
   _isArray: function (a) {return a && a.constructor === Array},
+  _extend: function (a, b) {if (b) {for (k in b) {a[k] = b[k]}}},
   
   /** Backbone's Surrogate extend */
-  _extend: function (Parent, proto) {
-    var Child, prop;
-    if (proto && proto.hasOwnProperty('constructor')) {Child = proto.constructor}
-    else {Child = function () {return Parent.apply(this, arguments)}}
-    
-    for (prop in Parent) {Child[prop] = Parent[prop]}
-    
-    var Surrogate = function () {this.constructor = Child};
-    Surrogate.prototype = Parent.prototype;
-    Child.prototype = new Surrogate;
-    
-    if (proto) {for (prop in proto) {Child.prototype[prop] = proto[prop]}}
+  _inherit: function (Parent, proto) {
+    var Child = proto && proto.hasOwnProperty('constructor') ? proto.constructor :
+      function () {return Parent.apply(this, arguments)};
+
+    Beget._extend(Child, Parent);
+    Beget._applySurrogate(Parent, Child);
+    Beget._extend(Child.prototype, proto);
 
     Child.__super__ = Parent.prototype;
     return Child;
+  },
+
+  _applySurrogate: function (Parent, Child) {
+    function Surrogate() {this.constructor = Child}
+    Surrogate.prototype = Parent.prototype;
+    Child.prototype = new Surrogate;
+    return Child;
   }
 };
+
+exports['/Beget'] = Beget;
