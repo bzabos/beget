@@ -8,8 +8,7 @@ var Beget = {
     if (argsAreAbsent) {delegate = args}
     
     var x = Beget[namespaceIsProto ? '_begetFromProto' : '_begetFromNS'](namespace, args);
-    if (delegate) {delegate.constructor(x)}
-    
+    if (delegate) {Beget._begetFromProto(delegate, [x])}
     return x;
   },
   
@@ -17,10 +16,6 @@ var Beget = {
     return Beget._begetFromProto(Beget._require(namespace), args);
   },
 
-  // todo: we need to cache Child to avoid recreating prototype every beget
-  // todo: we need to cache initial resolution to avoid parse+require
-  // todo: we need to use reference for parent method to avoid recreating it
-  // todo: we need to extract surrogate functionality as it's duplicated
   _begetFromProto: function (proto, args) {
     // decide how we want to procreate
     var parentNS = proto.extends || proto.inherits,
@@ -53,7 +48,7 @@ var Beget = {
           namespace = key; 
           break;
         }
-      } else {alias = '_' + namespace.split('/').pop()}
+      } else {alias = '_' + namespace.split('/').pop().split('.').pop()}
       
       x[alias] = this._resolveImport(namespace);
     }
@@ -80,7 +75,6 @@ var Beget = {
   _isArray: function (a) {return a && a.constructor === Array},
   _extend: function (a, b) {if (b) {for (k in b) {a[k] = b[k]}}},
   
-  /** Backbone's Surrogate extend */
   _inherit: function (Parent, proto) {
     var Child = proto && proto.hasOwnProperty('constructor') ? proto.constructor :
       function () {return Parent.apply(this, arguments)};

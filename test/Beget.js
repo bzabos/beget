@@ -10,22 +10,25 @@ exports['/beget/test/Beget'] = {
   '#beget()': {
     'should call constructor on delegate': function () {
       var wasCalled = false,
-        delegate = {constructor: function () {wasCalled = true}};
+          delegate = {constructor: function () {wasCalled = true}};
       this.beget('/beget/lib/bartho/hello/Kitty', delegate);
       this.assert.ok(wasCalled);
     },
 
     'should provide prototype\'s descendant to delegate constructor': function () {
-      var delegate = {constructor: function (p) {this.p = p}};
-
-      this.beget('/beget/lib/bartho/hello/Puppy', delegate);
-      this.assert(delegate.p instanceof this.Model);
+      var assert = this.assert, Model = this.Model;
+      this.beget('/beget/lib/bartho/hello/Puppy', {
+        constructor: function (p) {
+          assert(p instanceof Model);
+        }
+      });
     },
 
     'should return reference to new instance': function () {
-      var delegate = {constructor: function (k) {this.k = k}},
-        k = this.beget('/beget/lib/bartho/hello/Kitty', delegate);
-      this.assert.equal(k, delegate.k);
+      var kProvidedToDel,
+          kReturnedFromBeget = this.beget('/beget/lib/bartho/hello/Kitty', {constructor: function (k) {kProvidedToDel = k}});
+      this.assert(kProvidedToDel);
+      this.assert.equal(kProvidedToDel, kReturnedFromBeget);
     },
 
     'should provide arguments to Kitty.constructor when second arg is list': function () {
@@ -46,7 +49,7 @@ exports['/beget/test/Beget'] = {
 
     'should allow aliasing imports when dictionary': function () {
       var k = this.beget('/beget/lib/bartho/hello/Kitty');
-      this.assert.equal(this.Puppy, k._Dog);
+      this.assert.equal(this.Puppy, k.Dog);
     },
 
     'should allow import of entire module': function () {
@@ -54,7 +57,12 @@ exports['/beget/test/Beget'] = {
       this.assert.equal(require('underscore'), k._);
     },
 
-    'should allow method imports when dot-notation used': function () {
+    'should allow aliased method imports when dot-notation used': function () {
+      var k = this.beget('/beget/lib/bartho/hello/Kitty');
+      this.assert.equal(this.View, k.View);
+    },
+
+    'should allow defaulted imports when dot-notation used': function () {
       var k = this.beget('/beget/lib/bartho/hello/Kitty');
       this.assert.equal(this.View, k._View);
     },
@@ -75,10 +83,23 @@ exports['/beget/test/Beget'] = {
       this.assert.equal(500, p.get('id'));
     },
 
-    'should resolve imports onto delegate': function () {},
+    'should resolve imports onto delegate': function () {
+      var assert = this.assert, View = this.View;
+      this.beget('/beget/lib/bartho/hello/Puppy', {
+        imports: ['>backbone.View'],
+        constructor: function () {
+          assert.equal(View, this._View);
+        }
+      });
+    },
 
     'should do something with binding to prevent muckups when aliasing': function () {},
 
     'should allow import namespace resolution based upon where it\'s aliased': function () {}
+
+    // todo: we need to cache Child to avoid recreating prototype every beget
+    // todo: we need to cache initial resolution to avoid parse+require
+    // todo: we need to use reference for parent method to avoid recreating it
+    // todo: we need to extract surrogate functionality as it's duplicated
   }
 };
