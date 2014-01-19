@@ -4,32 +4,32 @@ exports['/beget/test/Beget'] = {
     this.Model = require('backbone').Model;
     this.View = require('backbone').View;
     this.beget = require('beget')['/Beget'].beget;
-    this.Puppy = require('beget/src/bartho/hello/Puppy')['/beget/src/bartho/hello/Puppy'];
+    this.Puppy = require('beget/lib/bartho/hello/Puppy')['/beget/lib/bartho/hello/Puppy'];
   },
 
   '#beget()': {
     'should call constructor on delegate': function () {
       var wasCalled = false,
         delegate = {constructor: function () {wasCalled = true}};
-      this.beget('/beget/src/bartho/hello/Kitty', delegate);
+      this.beget('/beget/lib/bartho/hello/Kitty', delegate);
       this.assert.ok(wasCalled);
     },
 
     'should provide prototype\'s descendant to delegate constructor': function () {
       var delegate = {constructor: function (p) {this.p = p}};
 
-      this.beget('/beget/src/bartho/hello/Puppy', delegate);
+      this.beget('/beget/lib/bartho/hello/Puppy', delegate);
       this.assert(delegate.p instanceof this.Model);
     },
 
     'should return reference to new instance': function () {
       var delegate = {constructor: function (k) {this.k = k}},
-        k = this.beget('/beget/src/bartho/hello/Kitty', delegate);
+        k = this.beget('/beget/lib/bartho/hello/Kitty', delegate);
       this.assert.equal(k, delegate.k);
     },
 
     'should provide arguments to Kitty.constructor when second arg is list': function () {
-      var k = this.beget('/beget/src/bartho/hello/Kitty', ['Fluffy']);
+      var k = this.beget('/beget/lib/bartho/hello/Kitty', ['Fluffy']);
       this.assert.equal('Fluffy', k.name);
     },
 
@@ -40,27 +40,27 @@ exports['/beget/test/Beget'] = {
     },
 
     'should provide private top-level reference to imported prototype when just namespace': function () {
-      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      var k = this.beget('/beget/lib/bartho/hello/Kitty');
       this.assert.equal(this.Puppy, k._Puppy);
     },
 
     'should allow aliasing imports when dictionary': function () {
-      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      var k = this.beget('/beget/lib/bartho/hello/Kitty');
       this.assert.equal(this.Puppy, k._Dog);
     },
 
     'should allow import of entire module': function () {
-      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      var k = this.beget('/beget/lib/bartho/hello/Kitty');
       this.assert.equal(require('underscore'), k._);
     },
 
     'should allow method imports when dot-notation used': function () {
-      var k = this.beget('/beget/src/bartho/hello/Kitty');
+      var k = this.beget('/beget/lib/bartho/hello/Kitty');
       this.assert.equal(this.View, k._View);
     },
 
     'should allow extension via extends prop': function () {
-      var k = this.beget('/beget/src/bartho/hello/Kitty', [{id: 500}]);
+      var k = this.beget('/beget/lib/bartho/hello/Kitty', [{id: 500}]);
       this.assert(k instanceof this.Model);
       this.assert.deepEqual({id: 500}, k.name);
       this.assert.equal(this.Model.prototype.set, k.set);
@@ -68,7 +68,7 @@ exports['/beget/test/Beget'] = {
     },
 
     'should allow inheritence via inherits prop': function () {
-      var p = this.beget('/beget/src/bartho/hello/Puppy', [{id: 500}]);
+      var p = this.beget('/beget/lib/bartho/hello/Puppy', [{id: 500}]);
       this.assert(p instanceof this.Model);
       this.assert.deepEqual({id: 500}, p.name);
       this.assert.equal(this.Model.prototype.set, p.set);
