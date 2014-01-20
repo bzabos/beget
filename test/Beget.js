@@ -93,13 +93,24 @@ exports['/beget/test/Beget'] = {
       });
     },
 
-    'should do something with binding to prevent muckups when aliasing': function () {},
+//    'should do something with binding to prevent muckups when aliasing': function () {},
 
-    'should allow import namespace resolution based upon where it\'s aliased': function () {}
+    'should allow local import namespace resolution based upon where it\'s aliased': function () {
+      var assert = this.assert, Model = this.Model;
+      this.beget('/beget/lib/bartho/hello/Kitty', {
+        imports: [
+          {'/beget/lib/bartho/hello/Puppy': 'Pup'},
+          {'/Beget.beget': 'beget'}],
+
+        constructor: function () {
+          var p = this.beget('#/Pup');
+          assert(p instanceof Model);
+        }
+      });
+    }
 
     // todo: we need to cache Child to avoid recreating prototype every beget
     // todo: we need to cache initial resolution to avoid parse+require
     // todo: we need to use reference for parent method to avoid recreating it
-    // todo: we need to extract surrogate functionality as it's duplicated
   }
 };
