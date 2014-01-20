@@ -14,6 +14,7 @@
     "assert": "*"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec --ui exports ./test/*"
+    "test": "./node_modules/.bin/mocha --reporter spec --ui exports ./test/*",
+    "debug": "./node_modules/.bin/mocha --reporter spec --ui exports --debug-brk ./test/*"
   }
 }
