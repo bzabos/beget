@@ -48,12 +48,13 @@ var Beget = {
           namespace = key; 
           break;
         }
-      } else {alias = '_' + namespace.split('/').pop().split('.').pop()}
+      } else {alias = '_' + namespace.split('/').pop().split('.').pop().split('#').pop()}
       
       x[alias] = this._resolveImport(namespace, self);
     }
   },
-  
+
+  // todo: extract piece parsing
   _resolveImport: function (namespace, self) {
     if (self && namespace.charAt(0) === '#') {return self[namespace.substr(2)]}
 
@@ -62,10 +63,31 @@ var Beget = {
       propRefs = namespace.split('.');
       namespace = propRefs.splice(0, 1)[0];
     }
-    
+
+    var namespaceHasBoundReference = namespace.indexOf('#') > 1,
+        propRefHasBoundReference = propRefs && propRefs.length && propRefs[propRefs.length - 1].indexOf('#') > -1,
+        methodToBind;
+
+    if (namespaceHasBoundReference) {
+      var sepIndex = namespace.indexOf('#');
+      methodToBind = namespace.substr(sepIndex + 1);
+      namespace = namespace.substr(0, sepIndex);
+    } else if (propRefHasBoundReference) {
+      var lastProp = propRefs[propRefs.length - 1];
+      var sepIndex = lastProp.indexOf('#');
+      methodToBind = lastProp.substr(sepIndex + 1);
+      lastProp = propRefs[propRefs.length - 1] = lastProp.substr(0, sepIndex);
+    }
+
     var mod = Beget._require(namespace);
     while (propRefs && propRefs.length) mod = mod[propRefs.shift()];
-    return mod;
+
+    var boundMethod;
+    if (methodToBind) {
+      boundMethod = function () {return mod[methodToBind].apply(mod, arguments)};
+    }
+
+    return boundMethod || mod;
   },
   
   _require: typeof(require) === 'undefined' ? function (ns) {

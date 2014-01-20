@@ -93,7 +93,17 @@ exports['/beget/test/Beget'] = {
       });
     },
 
-//    'should do something with binding to prevent muckups when aliasing': function () {},
+    'should allow bound method imports to prevent muckups when aliasing': function () {
+      var assert = this.assert;
+      this.beget('/beget/lib/bartho/hello/Kitty', {
+        imports: [
+          '/beget/lib/bartho/hello/Kitty',
+          '/beget/lib/bartho/hello/Kitty#getFuncContext'],
+        constructor: function () {
+          assert(this._Kitty === this._getFuncContext());
+        }
+      });
+    },
 
     'should allow local import namespace resolution based upon where it\'s aliased': function () {
       var assert = this.assert, Model = this.Model;
@@ -107,7 +117,9 @@ exports['/beget/test/Beget'] = {
           assert(p instanceof Model);
         }
       });
-    }
+    },
+
+//    'should allow dot-notation within local import resolution': function () {}
 
     // todo: we need to cache Child to avoid recreating prototype every beget
     // todo: we need to cache initial resolution to avoid parse+require
