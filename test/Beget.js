@@ -1,6 +1,7 @@
-exports['/beget/test/Beget'] = {
+this['/beget/test/Beget'] = {
   setUp: function () {
     this.assert = require('assert');
+    this.underscore = require('underscore');
     this.Model = require('backbone').Model;
     this.View = require('backbone').View;
     this.beget = require('beget')['/Beget'].beget;
@@ -54,7 +55,7 @@ exports['/beget/test/Beget'] = {
 
     'should allow import of entire module': function () {
       var k = this.beget('/beget/lib/bartho/hello/Kitty');
-      this.assert.equal(require('underscore'), k._);
+      this.assert.equal(this.underscore, k._);
     },
 
     'should allow aliased method imports when dot-notation used': function () {
@@ -117,9 +118,24 @@ exports['/beget/test/Beget'] = {
           assert(p instanceof Model);
         }
       });
-    },
+    }
 
-//    'should allow dot-notation within local import resolution': function () {}
+//    'should allow dot-notation within local import resolution': function () {
+//      var assert = this.assert, View = this.View;
+//      this.beget('/beget/lib/bartho/hello/Kitty', {
+//        imports: [
+//          {'>backbone': 'Backbone'},
+//          {'/Beget.beget': 'beget'}],
+//
+//        constructor: function () {
+//          var v = this.beget('#/Backbone.View', [{id: 500}]);
+//          var v = new this.Backbone.View({id: 500});
+//
+//          assert(v instanceof View);
+//          assert.equal(500, v.id);
+//        }
+//      });
+//    }
 
     // todo: we need to cache Child to avoid recreating prototype every beget
     // todo: we need to cache initial resolution to avoid parse+require
