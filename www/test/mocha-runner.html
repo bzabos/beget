@@ -1,0 +1,38 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+</head>
+<body>
+
+<div id="mocha"></div>
+
+<script src="../../node_modules/mocha/mocha.js"></script>
+<script src="../../node_modules/chai/chai.js"></script>
+<script src="../../node_modules/underscore/underscore-min.js"></script>
+<script src="../../node_modules/backbone/backbone-min.js"></script>
+<script src="../../src/Beget.js"></script>
+<script src="../../lib/bartho/hello/Kitty.js"></script>
+<script src="../../lib/bartho/hello/Puppy.js"></script>
+<script src="../../test/Beget.js"></script>
+<script>
+    _(this).extend({
+        underscore: _,
+        backbone: Backbone,
+        assert: chai.assert,
+        require: Beget._require});
+
+    Beget.beget({
+        imports: ['/beget/test/Beget'],
+        constructor: function () {
+            mocha.setup({ui: 'exports'});
+            mocha.suite.emit('require', {'/beget/test/Beget': this._Beget});
+            mocha.globals(['require']);
+            mocha.checkLeaks();
+            mocha.run();
+        }
+    });
+</script>
+</body>
+</html>
