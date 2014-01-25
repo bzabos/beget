@@ -58,25 +58,17 @@ var Beget = {
 
   // todo: extract piece parsing then provide (alias?, exportType[ns, local, global], path, keys, method)
   _resolveImport: function (namespace, self) {
+    var namespaceHasBoundReference = namespace.indexOf('#') > 1, methodToBind;
+    if (namespaceHasBoundReference) {
+      var sepIndex = namespace.indexOf('#');
+      methodToBind = namespace.substr(sepIndex + 1);
+      namespace = namespace.substr(0, sepIndex);
+    }
+
     var namespaceHasPropReferences = namespace.indexOf('.') > -1, propRefs;
     if (namespaceHasPropReferences) {
       propRefs = namespace.split('.');
       namespace = propRefs.splice(0, 1)[0];
-    }
-
-    var namespaceHasBoundReference = namespace.indexOf('#') > 1,
-        propRefHasBoundReference = propRefs && propRefs.length && propRefs[propRefs.length - 1].indexOf('#') > -1,
-        methodToBind;
-
-    if (namespaceHasBoundReference) {
-      var sepIndex = namespace.indexOf('#');
-      namespace = namespace.substr(0, sepIndex);
-      methodToBind = namespace.substr(sepIndex + 1);
-    } else if (propRefHasBoundReference) {
-      var lastProp = propRefs[propRefs.length - 1];
-      var sepIndex = lastProp.indexOf('#');
-      propRefs[propRefs.length - 1] = lastProp = lastProp.substr(0, sepIndex);
-      methodToBind = lastProp.substr(sepIndex + 1);
     }
 
     var namespaceIsLocalReference = self && namespace.charAt(0) === '#',
