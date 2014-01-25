@@ -16,7 +16,9 @@
 <script src="../../lib/bartho/hello/Kitty.js"></script>
 <script src="../../lib/bartho/hello/Puppy.js"></script>
 <script src="../../test/Beget.js"></script>
+<script src="../../test/BegetIntegration.js"></script>
 <script>
+    // sync npm modules with web modules
     _(this).extend({
         underscore: _,
         backbone: Backbone,
@@ -24,10 +26,14 @@
         require: Beget._require});
 
     Beget.beget({
-        imports: ['/beget/test/Beget'],
+        imports: [
+//            '/beget/test/Beget',
+            '/beget/test/BegetIntegration'],
         constructor: function () {
             mocha.setup({ui: 'exports'});
-            mocha.suite.emit('require', {'/beget/test/Beget': this._Beget});
+            mocha.suite.emit('require', {
+//                '/beget/test/Beget': this._Beget,
+                '/beget/test/BegetIntegration': this._BegetIntegration});
             mocha.globals(['require']);
             mocha.checkLeaks();
             mocha.run();

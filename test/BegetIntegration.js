@@ -1,4 +1,4 @@
-this['/beget/test/Beget'] = {
+this['/beget/test/BegetIntegration'] = {
   setUp: function () {
     this.assert = require('assert');
     this.underscore = require('underscore');
@@ -140,5 +140,8 @@ this['/beget/test/Beget'] = {
     // todo: we need to cache Child to avoid recreating prototype every beget
     // todo: we need to cache initial resolution to avoid parse+require
     // todo: we need to use reference for parent method to avoid recreating it
+
+    // todo: we need to manage cyclic dependencies :)
+    // todo: we need to add Beget.registerDefinition('/beget/Beget', {}); to make it more like spring / DI?
   }
 };

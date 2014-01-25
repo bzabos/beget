@@ -11,7 +11,9 @@
     "underscore": "*",
     "backbone": "*",
     "mocha": "*",
-    "assert": "*"
+    "assert": "*",
+    "chai": "*",
+    "sinon": "*"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec --ui exports ./test/*",
