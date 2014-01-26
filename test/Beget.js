@@ -118,7 +118,7 @@ this['/beget/test/Beget'] = {
         this.assert.equal('Face', pieces.target);
       },
 
-      'should be something when path and keys absent': function () {
+      'should be module when path and keys absent': function () {
         var pieces = this.Beget._extractNSPieces('>cat');
         this.assert.equal('cat', pieces.target);
       },
