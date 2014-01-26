@@ -27,12 +27,12 @@
 
     Beget.beget({
         imports: [
-//            '/beget/test/Beget',
+            '/beget/test/Beget',
             '/beget/test/BegetIntegration'],
         constructor: function () {
             mocha.setup({ui: 'exports'});
             mocha.suite.emit('require', {
-//                '/beget/test/Beget': this._Beget,
+                '/beget/test/Beget': this._Beget,
                 '/beget/test/BegetIntegration': this._BegetIntegration});
             mocha.globals(['require']);
             mocha.checkLeaks();

@@ -56,8 +56,31 @@ var Beget = {
     }
   },
 
+  _extractNSPieces: function (ns) {
+    var exportType = ns.substr(0, 2) === '#/' ? '#/' : ns.charAt(0);
+
+    var methodStart = ns.lastIndexOf('#'),
+        hasMethod = methodStart !== -1 && methodStart !== 0,
+        method = hasMethod ? ns.substr(methodStart + 1, ns.length) : null;
+
+
+    var pathStart = ns.indexOf('/'),
+        hasPath = pathStart !== -1,
+        path = hasPath ? ns.substr(pathStart + 1, hasMethod ? ns.length - method.length - pathStart - 2 : ns.length).split('/') : null;
+
+    var keysStart = ns.indexOf('.'),
+        hasKeys = keysStart !== -1,
+        keys = hasKeys ? ns.substr(keysStart + 1, hasMethod ? ns.length - method.length - keysStart - 2 : ns.length).split('.') : null;
+
+    var target = hasKeys ? keys[keys.length - 1] : hasPath ? path[path.length - 1] : ns.substr(exportType.length);
+
+    return {exportType: exportType, target: target, method: method, keys: keys, path: path};
+  },
+
   // todo: extract piece parsing then provide (alias?, exportType[ns, local, global], path, keys, method)
   _resolveImport: function (namespace, self) {
+//    var pieces = this._extractNSPieces(namespace);
+
     var namespaceHasBoundReference = namespace.indexOf('#') > 1, methodToBind;
     if (namespaceHasBoundReference) {
       var sepIndex = namespace.indexOf('#');

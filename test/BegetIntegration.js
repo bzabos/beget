@@ -1,10 +1,10 @@
 this['/beget/test/BegetIntegration'] = {
   setUp: function () {
     this.assert = require('assert');
+    this.beget = require('beget')['/Beget'].beget;
     this.underscore = require('underscore');
     this.Model = require('backbone').Model;
     this.View = require('backbone').View;
-    this.beget = require('beget')['/Beget'].beget;
     this.Puppy = require('beget/lib/bartho/hello/Puppy')['/beget/lib/bartho/hello/Puppy'];
   },
 
