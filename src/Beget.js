@@ -57,24 +57,18 @@ var Beget = {
   },
 
   _extractNSPieces: function (ns) {
-    var exportType = ns.substr(0, 2) === '#/' ? '#/' : ns.charAt(0);
-
-    var methodStart = ns.lastIndexOf('#'),
-        hasMethod = methodStart !== -1 && methodStart !== 0,
-        method = hasMethod ? ns.substr(methodStart + 1, ns.length) : null;
-
-
-    var pathStart = ns.indexOf('/'),
-        hasPath = pathStart !== -1,
-        path = hasPath ? ns.substr(pathStart + 1, hasMethod ? ns.length - method.length - pathStart - 2 : ns.length).split('/') : null;
-
-    var keysStart = ns.indexOf('.'),
-        hasKeys = keysStart !== -1,
-        keys = hasKeys ? ns.substr(keysStart + 1, hasMethod ? ns.length - method.length - keysStart - 2 : ns.length).split('.') : null;
-
-    var target = hasKeys ? keys[keys.length - 1] : hasPath ? path[path.length - 1] : ns.substr(exportType.length);
-
-    return {exportType: exportType, target: target, method: method, keys: keys, path: path};
+    var exportType = ns.substr(0, 2) === '#/' ? '#/' : ns.charAt(0),
+        method = ns.substr(exportType.length).split('#'),
+        keys = method.shift().split('.'),
+        path = keys.shift().split('/'),
+        target = (keys.length && keys[keys.length - 1]) ||
+                 (path.length && path[path.length - 1]) || ns;
+    return {
+      exportType: exportType,
+      method: method[0] || null,
+      keys: keys.length ? keys : null,
+      path: path.length ? path : null,
+      target: target};
   },
 
   // todo: extract piece parsing then provide (alias?, exportType[ns, local, global], path, keys, method)

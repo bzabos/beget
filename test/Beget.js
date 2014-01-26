@@ -11,7 +11,7 @@ this['/beget/test/Beget'] = {
   '#_extractNSPieces()': {
     'should return a map containing exportType, target, method, keys and path': function () {
       var pieces = this.Beget._extractNSPieces('/Cat');
-      this.assert.deepEqual(['exportType', 'target', 'method', 'keys', 'path'], this._(pieces).keys());
+      this.assert.deepEqual(['exportType', 'method', 'keys', 'path', 'target'], this._(pieces).keys());
     },
 
     'exportType': {
@@ -59,9 +59,9 @@ this['/beget/test/Beget'] = {
         this.assert(pieces.path instanceof [].constructor);
       },
 
-      'should be null when path absent': function () {
+      'should be first item when global': function () {
         var pieces = this.Beget._extractNSPieces('>backbone.View');
-        this.assert.equal(null, pieces.path);
+        this.assert.equal('backbone', pieces.path);
       },
 
       'should still be list of all levels within path': function () {
@@ -72,6 +72,11 @@ this['/beget/test/Beget'] = {
       'should still be list even when path is single level': function () {
         var pieces = this.Beget._extractNSPieces('/Cat');
         this.assert.deepEqual(['Cat'], pieces.path);
+      },
+
+      'should contain base item in dot-notation when keys exist': function () {
+        var pieces = this.Beget._extractNSPieces('/Cat/Face/Whiskers.count.toString');
+        this.assert.deepEqual(['Cat', 'Face', 'Whiskers'], pieces.path);
       }
     },
 
@@ -120,6 +125,11 @@ this['/beget/test/Beget'] = {
 
       'should be module when path and keys absent': function () {
         var pieces = this.Beget._extractNSPieces('>cat');
+        this.assert.equal('cat', pieces.target);
+      },
+
+      'should be module without method when path and keys absent and method preset': function () {
+        var pieces = this.Beget._extractNSPieces('>cat#meow');
         this.assert.equal('cat', pieces.target);
       },
 
