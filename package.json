@@ -5,7 +5,7 @@
     "type": "git",
     "url": "https://github.com/bzabos/beget"
   },
-  "main": "./src/Beget.js",
+  "main": "./src/Beget",
   "private": true,
   "devDependencies": {
     "underscore": "*",
@@ -16,6 +16,7 @@
     "sinon": "*"
   },
   "scripts": {
+    "pretest": "mkdir node_modules; ln -s `pwd` node_modules/beget",
     "test": "./node_modules/.bin/mocha --reporter spec --ui exports ./test/*",
     "debug": "./node_modules/.bin/mocha --reporter spec --ui exports --debug-brk ./test/*"
   }
