@@ -11,23 +11,35 @@ this['/beget/test/Beget'] = {
   '#_parseNamespace()': {
     'should return a map containing exportType, target, method, keys and path': function () {
       var pieces = this.Beget._parseNamespace('/Cat');
-      this.assert.deepEqual(['exportType', 'method', 'keys', 'path', 'target'], this._(pieces).keys());
+      this.assert.deepEqual(
+        ["isLocal", "isModule", "isNamespaced", "method", "keys", "path", "target"],
+        this._(pieces).keys());
     },
 
-    'exportType': {
-      'should be slash when ns prefixed with slash': function () {
-        var pieces = this.Beget._parseNamespace('/Cat');
-        this.assert.equal('/', pieces.exportType);
-      },
-
-      'should be a right chevron when ns prefixed with right chevron': function () {
-        var pieces = this.Beget._parseNamespace('>cat');
-        this.assert.equal('>', pieces.exportType);
-      },
-
-      'should be a pound-slash when ns prefixed with pound-slash': function () {
+    'isLocal': {
+      'should be true when prefixed with pound-slash': function () {
         var pieces = this.Beget._parseNamespace('#/Cat');
-        this.assert.equal('#/', pieces.exportType);
+        this.assert(pieces.isLocal);
+        this.assert(!pieces.isModule);
+        this.assert(!pieces.isNamespaced);
+      }
+    },
+
+    'isModule': {
+      'should be true when prefixed with right chevron': function () {
+        var pieces = this.Beget._parseNamespace('>backbone');
+        this.assert(!pieces.isLocal);
+        this.assert(pieces.isModule);
+        this.assert(!pieces.isNamespaced);
+      }
+    },
+
+    'isNamespaced': {
+      'should be true when prefixed with slash': function () {
+        var pieces = this.Beget._parseNamespace('/Cat');
+        this.assert(!pieces.isLocal);
+        this.assert(!pieces.isModule);
+        this.assert(pieces.isNamespaced);
       }
     },
 
@@ -153,5 +165,11 @@ this['/beget/test/Beget'] = {
         this.assert.equal('Face', pieces.target);
       }
     }
+  },
+
+  '#_resolveImport': {
+    'should attempt to import module': function () {},
+    'should attempt to drill into properties': function () {},
+    'should bind method reference when method reference exists': function () {}
   }
 };

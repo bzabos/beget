@@ -73,14 +73,49 @@ var Beget = {
       target: target};
   },
 
-  _resolveImport: function (namespace, self) {
+  _resolveYoImport: function (namespace, self) {
     var parsedNS = this._parseNamespace(namespace),
         module = self && parsedNS.isLocal ? self[parsedNS.target] : Beget._require(parsedNS);
     while (parsedNS.keys) module = module[parsedNS.keys.shift()];
     return parsedNS.method ? function () {return module[parsedNS.method].apply(module, arguments)} : module;
   },
 
-  _require: typeof(require) === 'undefined' ? function (parsedNS) {
+  _resolveImport: function (namespace, self) {
+    var namespaceHasBoundReference = namespace.indexOf('#') > 1, methodToBind;
+    if (namespaceHasBoundReference) {
+      var sepIndex = namespace.indexOf('#');
+      methodToBind = namespace.substr(sepIndex + 1);
+      namespace = namespace.substr(0, sepIndex);
+    }
+
+    var namespaceHasPropReferences = namespace.indexOf('.') > -1, propRefs;
+    if (namespaceHasPropReferences) {
+      propRefs = namespace.split('.');
+      namespace = propRefs.splice(0, 1)[0];
+    }
+
+    var namespaceIsLocalReference = self && namespace.charAt(0) === '#',
+      mod = namespaceIsLocalReference ? self[namespace.substr(2)] : Beget._require(namespace);
+    while (propRefs && propRefs.length) mod = mod[propRefs.shift()];
+
+    var boundMethod;
+    if (methodToBind) {
+      boundMethod = function () {return mod[methodToBind].apply(mod, arguments)};
+    }
+
+    return boundMethod || mod;
+  },
+
+  _require: typeof(require) === 'undefined' ? function (ns) {
+//    var exportType = ns.charAt(0);
+//    return exportType === '/' ? exports[ns] : Beget.global[ns.substr(1)];
+    return Beget.global[ns] || Beget.global[ns.substr(1)] || Beget.global;
+  } : function (ns) {
+    var exportType = ns.charAt(0), mod = require(ns.substr(1));
+    return exportType === '/' ? mod[ns] : mod;
+  },
+
+  old_require: typeof(require) === 'undefined' ? function (parsedNS) {
     var path = parsedNS.isNamespaced ? '/' + parsedNS.path.join('/') : parsedNS.target,
         module = Beget.global;
     return module[path] || module;
