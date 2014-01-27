@@ -75,9 +75,12 @@ var Beget = {
 
   _resolveYoImport: function (namespace, self) {
     var parsedNS = this._parseNamespace(namespace),
-        module = self && parsedNS.isLocal ? self[parsedNS.target] : Beget._require(parsedNS);
-    while (parsedNS.keys) module = module[parsedNS.keys.shift()];
-    return parsedNS.method ? function () {return module[parsedNS.method].apply(module, arguments)} : module;
+        path = parsedNS.path.join('/'),
+        mod = parsedNS.isLocal ? self[path] : Beget._require(path),
+        keys = parsedNS.keys && parsedNS.keys.slice();
+
+    while (keys && keys.length) mod = mod[keys.shift()];
+    return parsedNS.method ? function () {return mod[parsedNS.method].apply(mod, arguments)} : mod;
   },
 
   _resolveImport: function (namespace, self) {
