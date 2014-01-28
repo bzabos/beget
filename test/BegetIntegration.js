@@ -111,7 +111,7 @@ this['/beget/test/BegetIntegration'] = {
       this.beget('/beget/lib/bartho/hello/Kitty', {
         imports: [
           {'/beget/lib/bartho/hello/Puppy': 'Pup'},
-          {'/Beget.beget': 'beget'}],
+          {'/beget.beget': 'beget'}],
 
         constructor: function () {
           var p = this.beget('#/Pup');
