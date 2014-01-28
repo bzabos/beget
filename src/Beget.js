@@ -73,52 +73,25 @@ var Beget = {
       target: target};
   },
 
-  _resolveYoImport: function (namespace, self) {
+  _resolveImport: function (namespace, self) {
     var parsedNS = this._parseNamespace(namespace),
-        path = parsedNS.path.join('/'),
-        mod = parsedNS.isLocal ? self[path] : Beget._require(path),
+        mod = parsedNS.isLocal ? self[parsedNS.path.join('/')] : Beget._require(parsedNS),
         keys = parsedNS.keys && parsedNS.keys.slice();
 
     while (keys && keys.length) mod = mod[keys.shift()];
     return parsedNS.method ? function () {return mod[parsedNS.method].apply(mod, arguments)} : mod;
   },
 
-  _resolveImport: function (namespace, self) {
-    var namespaceHasBoundReference = namespace.indexOf('#') > 1, methodToBind;
-    if (namespaceHasBoundReference) {
-      var sepIndex = namespace.indexOf('#');
-      methodToBind = namespace.substr(sepIndex + 1);
-      namespace = namespace.substr(0, sepIndex);
-    }
+//  _require: typeof(require) === 'undefined' ? function (ns) {
+////    var exportType = ns.charAt(0);
+////    return exportType === '/' ? exports[ns] : Beget.global[ns.substr(1)];
+//    return Beget.global[ns] || Beget.global[ns.substr(1)] || Beget.global;
+//  } : function (ns) {
+//    var exportType = ns.charAt(0), mod = require(ns.substr(1));
+//    return exportType === '/' ? mod[ns] : mod;
+//  },
 
-    var namespaceHasPropReferences = namespace.indexOf('.') > -1, propRefs;
-    if (namespaceHasPropReferences) {
-      propRefs = namespace.split('.');
-      namespace = propRefs.splice(0, 1)[0];
-    }
-
-    var namespaceIsLocalReference = self && namespace.charAt(0) === '#',
-      mod = namespaceIsLocalReference ? self[namespace.substr(2)] : Beget._require(namespace);
-    while (propRefs && propRefs.length) mod = mod[propRefs.shift()];
-
-    var boundMethod;
-    if (methodToBind) {
-      boundMethod = function () {return mod[methodToBind].apply(mod, arguments)};
-    }
-
-    return boundMethod || mod;
-  },
-
-  _require: typeof(require) === 'undefined' ? function (ns) {
-//    var exportType = ns.charAt(0);
-//    return exportType === '/' ? exports[ns] : Beget.global[ns.substr(1)];
-    return Beget.global[ns] || Beget.global[ns.substr(1)] || Beget.global;
-  } : function (ns) {
-    var exportType = ns.charAt(0), mod = require(ns.substr(1));
-    return exportType === '/' ? mod[ns] : mod;
-  },
-
-  old_require: typeof(require) === 'undefined' ? function (parsedNS) {
+  _require: typeof(require) === 'undefined' ? function (parsedNS) {
     var path = parsedNS.isNamespaced ? '/' + parsedNS.path.join('/') : parsedNS.target,
         module = Beget.global;
     return module[path] || module;

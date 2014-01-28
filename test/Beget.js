@@ -168,22 +168,25 @@ this['/beget/test/Beget'] = {
     }
   },
 
-  '#_resolveYoImport': {
+  '#_resolveImport': {
     beforeEach: function () {
+      this.parsedNS = {};
       this.sinon = require('sinon').sandbox.create();
       this.stubFor_require = this.sinon.stub(this.Beget, '_require');
     },
 
     afterEach: function () {this.sinon.restore()},
 
-    // todo: require should be provided parsed ns, rather than pathId
+    // todo: _resolveImport should accept parsed ns rather than string (to push up one level to _populateImportsOnto
     'should attempt to import module': function () {
-      this.Beget._resolveYoImport('/Cat/Face/Whiskers');
-      this.assert(this.Beget._require.calledWith('Cat/Face/Whiskers'));
+      var ns = {isNamespaced: true, path: ["Cat", "Face", "Whiskers"]};
+      this.sinon.stub(this.Beget, '_parseNamespace').returns(ns);
+      this.Beget._resolveImport('/Cat/Face/Whiskers');
+      this.assert(this.Beget._require.calledWith(ns));
     },
 
     'should lookup props from self when provided': function () {
-      var count = this.Beget._resolveYoImport('#/Cat.whiskers.count', {Cat: {whiskers: {count: 900}}});
+      var count = this.Beget._resolveImport('#/Cat.whiskers.count', {Cat: {whiskers: {count: 900}}});
       this.assert(this.Beget._require.notCalled);
       this.assert.equal(900, count);
     },
@@ -191,28 +194,28 @@ this['/beget/test/Beget'] = {
     'should return module as is when keys absent': function () {
       this.stubFor_require.returns('some module');
 
-      var module = this.Beget._resolveYoImport('/Cat/Face/Whiskers');
+      var module = this.Beget._resolveImport('/Cat/Face/Whiskers');
       this.assert.equal('some module', module);
     },
 
     'should return property of module with key when provided': function () {
       this.stubFor_require.returns({count: 900});
 
-      var count = this.Beget._resolveYoImport('/Cat/Face/Whiskers.count');
+      var count = this.Beget._resolveImport('/Cat/Face/Whiskers.count');
       this.assert.equal(900, count);
     },
 
     'should return nested properties from module when provided': function () {
       this.stubFor_require.returns({whiskers: {count: 900}});
 
-      var toString = this.Beget._resolveYoImport('/Cat/Face.whiskers.count.toString');
+      var toString = this.Beget._resolveImport('/Cat/Face.whiskers.count.toString');
       this.assert.equal((900).toString, toString);
     },
 
     'should return bound method when method exists': function () {
       this.stubFor_require.returns({whiskers: {count: 900}});
 
-      var toString = this.Beget._resolveYoImport('/Cat/Face.whiskers.count#toString');
+      var toString = this.Beget._resolveImport('/Cat/Face.whiskers.count#toString');
       this.assert.equal('900', toString());
     }
   }
