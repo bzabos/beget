@@ -10,6 +10,7 @@
 
 <script src="../../node_modules/mocha/mocha.js"></script>
 <script src="../../node_modules/chai/chai.js"></script>
+<script src="../../node_modules/sinon/pkg/sinon.js"></script>
 <script src="../../node_modules/underscore/underscore-min.js"></script>
 <script src="../../node_modules/backbone/backbone-min.js"></script>
 <script src="../../src/Beget.js"></script>
@@ -23,7 +24,7 @@
         underscore: _,
         backbone: Backbone,
         assert: chai.assert,
-        require: Beget._require});
+        require: Beget.__require});
 
     Beget.beget({
         imports: [
