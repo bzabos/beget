@@ -82,24 +82,19 @@ var Beget = {
     return parsedNS.method ? function () {return mod[parsedNS.method].apply(mod, arguments)} : mod;
   },
 
-//  _require: typeof(require) === 'undefined' ? function (ns) {
-////    var exportType = ns.charAt(0);
-////    return exportType === '/' ? exports[ns] : Beget.global[ns.substr(1)];
-//    return Beget.global[ns] || Beget.global[ns.substr(1)] || Beget.global;
-//  } : function (ns) {
-//    var exportType = ns.charAt(0), mod = require(ns.substr(1));
-//    return exportType === '/' ? mod[ns] : mod;
-//  },
-
   _require: typeof(require) === 'undefined' ? function (parsedNS) {
-    var path = parsedNS.isNamespaced ? '/' + parsedNS.path.join('/') : parsedNS.target,
+    var path = parsedNS.path.join('/'),
         module = Beget.global;
-    return module[path] || module;
+    return parsedNS.isNamespaced ? module['/' + path] : module[path];
   } : function (parsedNS) {
     var path = parsedNS.path.join('/'),
         module = require(path);
     return parsedNS.isNamespaced ? module['/' + path] : module;
   },
+
+  // hack for now, to fudge web
+//  __require: function (ns) {return Beget.global[ns] || (Beget.global['/' + ns] && Beget.global)},
+  __require: function (ns) {return Beget.global[ns] || Beget.global},
 
   _isString: function (s) {return (s || s === '') && s.constructor === Beget.String},
   _isArray: function (a) {return a && a.constructor === Beget.Array},
