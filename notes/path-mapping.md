@@ -15,24 +15,17 @@ Here's the issue...
 
 
 ## Include Scenarios:
+* require(backbone)
+** modules/backbone/{main}.js \[OR\]
+** modules/backbone/index.js
+* require(backbone/some-file)
+** modules/backbone/some-file.js
+* require(./backbone/some-file)
+** ./backbone/some-file.js
+* w.backbone
+* w\[/backbone/View\]
 
-### require(backbone)
-* modules/backbone/{main}.js \[OR\]
-* modules/backbone/index.js
-
-### require(backbone/some-file)
-* modules/backbone/some-file.js
-
-### require(./backbone/some-file)
-* ./backbone/some-file.js
-
-### w.backbone
-
-### w\[/backbone/View\]
-
-
-
-###Structures:
+### Structures:
 NOTE: Lib is part of {some-project}, and would (likely?) be a part of this namespace
 * {project-name}/src/lib/helpers/SomeClass.js
 * {project-name}/src/views/SomeView.js
