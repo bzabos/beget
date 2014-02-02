@@ -120,4 +120,4 @@ var Beget = {
   }
 };
 
-this['/Beget'] = Beget;
+this['/beget/src/Beget'] = Beget;

@@ -5,7 +5,7 @@ this['/beget/test/Beget'] = {
   },
 
   beforeEach: function () {
-    this.Beget = require('beget')['/Beget'];
+    this.Beget = require('beget')['/beget/src/Beget'];
   },
 
   // todo: we should add "pathId" prop to parsed (mitigate frequent path.join())

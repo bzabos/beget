@@ -1,7 +1,7 @@
 this['/beget/test/BegetIntegration'] = {
   setUp: function () {
     this.assert = require('assert');
-    this.beget = require('beget')['/Beget'].beget;
+    this.beget = require('beget')['/beget/src/Beget'].beget;
     this.underscore = require('underscore');
     this.Model = require('backbone').Model;
     this.View = require('backbone').View;
@@ -111,7 +111,7 @@ this['/beget/test/BegetIntegration'] = {
       this.beget('/beget/lib/bartho/hello/Kitty', {
         imports: [
           {'/beget/lib/bartho/hello/Puppy': 'Pup'},
-          {'/beget.beget': 'beget'}],
+          {'/beget/src/Beget.beget': 'beget'}],
 
         constructor: function () {
           var p = this.beget('#/Pup');
@@ -125,7 +125,7 @@ this['/beget/test/BegetIntegration'] = {
 //      this.beget('/beget/lib/bartho/hello/Kitty', {
 //        imports: [
 //          {'>backbone': 'Backbone'},
-//          {'/Beget.beget': 'beget'}],
+//          {'/beget/src/Beget.beget': 'beget'}],
 //
 //        constructor: function () {
 //          var v = this.beget('#/Backbone.View', [{id: 500}]);
@@ -143,5 +143,10 @@ this['/beget/test/BegetIntegration'] = {
 
     // todo: we need to manage cyclic dependencies :)
     // todo: we need to add Beget.registerDefinition('/beget/Beget', {}); to make it more like spring / DI?
+    // todo: we could add Beget.registerAlias('/beget/src', '/beget')
+    // todo: investigate psr-4 to see if we should mimic this behavior with regards to namespaces from multiple file locations
+
+    // todo: implement namespacing mapping directly to filesystem; use lowercased path
+    // todo: implement optional/inflation of {src} dir (via namespace mappings?)
   }
 };
